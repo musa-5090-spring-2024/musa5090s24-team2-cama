@@ -10,14 +10,14 @@ Since bucket names must be globally unique, each name contains `team<N>` which s
 
 | Bucket name | Description of contents |
 |-------------|-------------------------|
-| `musa509s23_team<N>_raw_data` | Raw data from the sources. |
-| `musa509s23_team<N>_prepared_data` | Data prepared for external tables in BigQuery. |
-| `musa509s23_team<N>_temp_data` | Temporary data used during processing. Files stored here will be deleted after a few days. |
-| `musa509s23_team<N>_public` | Files that are accessible to the public. These files are primarily inteded to be consumed by the assessment review and property information apps. |
+| `musa5090s24_team<N>_raw_data` | Raw data from the sources. |
+| `musa5090s24_team<N>_prepared_data` | Data prepared for external tables in BigQuery. |
+| `musa5090s24_team<N>_temp_data` | Temporary data used during processing. Files stored here will be deleted after a few days. |
+| `musa5090s24_team<N>_public` | Files that are accessible to the public. These files are primarily inteded to be consumed by the assessment review and property information apps. |
 
 ### Raw Data
 
-In the `musa509s23_team<N>_raw_data` bucket, there are three folders. Each folder may contain one or multiple files, depending on the type of data loaded (for example, a shapefile may be stored as multiple files). The folders are as follows:
+In the `musa5090s24_team<N>_raw_data` bucket, there are three folders. Each folder may contain one or multiple files, depending on the type of data loaded (for example, a shapefile may be stored as multiple files). The folders are as follows:
 
 | Folder | Contents |
 |--------|----------|
@@ -27,7 +27,7 @@ In the `musa509s23_team<N>_raw_data` bucket, there are three folders. Each folde
 
 ### Prepared Data
 
-In the `musa509s23_team<N>_prepared_data` bucket, there are three folders. Each should contain a single file named `data.jsonl`. The folders are as follows:
+In the `musa5090s24_team<N>_prepared_data` bucket, there are three folders. Each should contain a single file named `data.jsonl`. The folders are as follows:
 
 | Folder | Contents |
 |--------|----------|
@@ -37,7 +37,7 @@ In the `musa509s23_team<N>_prepared_data` bucket, there are three folders. Each 
 
 ### Public Files
 
-The `musa509s23_team<N>_public` bucket contains files that are formatted to be used in the assessment review dashboard. These files are accessible via public URLs. Files used in this way (as artifacts for a web application) are often called "assets".
+The `musa5090s24_team<N>_public` bucket contains files that are formatted to be used in the assessment review dashboard. These files are accessible via public URLs. Files used in this way (as artifacts for a web application) are often called "assets".
 
 | Folder | Contents |
 |--------|----------|
@@ -58,7 +58,7 @@ The `musa509s23_team<N>_public` bucket contains files that are formatted to be u
 
 #### Source Tables
 
-The tables in `source` are external tables. The data is stored in JSON-L files in the `musa509s23_team<N>_prepared_data` Cloud Storage bucket.
+The tables in `source` are external tables. The data is stored in JSON-L files in the `musa5090s24_team<N>_prepared_data` Cloud Storage bucket.
 
 - `source.opa_properties`
 - `source.opa_assessments`
@@ -127,7 +127,7 @@ The `derived` schema contains all-new tables with data based on analyses and pre
 
 ### Extracting
 
-Each of these tasks download data from some source and store the data in `musa509s23_team<N>_raw_data`.
+Each of these tasks download data from some source and store the data in `musa5090s24_team<N>_raw_data`.
 
 - `extract-opa-properties`
 - `extract-opa-assessments`
@@ -135,7 +135,7 @@ Each of these tasks download data from some source and store the data in `musa50
 
 ### Preparing (i.e. little-t transforming)
 
-Each of these tasks read raw stored data from GCS and converts it into a clean CSV file in `musa509s23_team<N>_prepared_data`.
+Each of these tasks read raw stored data from GCS and converts it into a clean CSV file in `musa5090s24_team<N>_prepared_data`.
 
 - `prepare-opa-properties`
 - `prepare-opa-assessments`
@@ -165,7 +165,7 @@ Each of these tasks reads data from the `core` dataset, performs some analysis o
 
 To run the assessment prediction across all the properties, we use a Cloud Run job named `predict-current-assessments`. The script reads the `derived.assessment_inputs` table and writes the results to the `derived.current_assessments` table.
 
-To create the vector tiles for the assessment review dashboard, we use a Cloud Run job named `generate-property-map-tiles`. The script downloads the `property_tile_info.geojson` file from the `musa509s23_team<N>_temp_data` bucket, generates vector tiles, and writes the results to the `musa509s23_team<N>_public/tiles` folder.
+To create the vector tiles for the assessment review dashboard, we use a Cloud Run job named `generate-property-map-tiles`. The script downloads the `property_tile_info.geojson` file from the `musa5090s24_team<N>_temp_data` bucket, generates vector tiles, and writes the results to the `musa5090s24_team<N>_public/tiles` folder.
 
 ## Workflows
 
