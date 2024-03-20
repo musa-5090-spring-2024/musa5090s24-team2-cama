@@ -180,3 +180,20 @@ In each project, a service account named `data-pipeline-user` was created to pro
 - `Cloud Functions Invoker`
 - `Cloud Run Invoker`
 - `Workflows Invoker`
+
+## Branch (devTestBranch) Details
+
+* This branch was created to refresh myself and others on creating a branch.
+	-	Hopefully, it can be a testing ground during development too.
+
+Run the following to create and switch to a branch (in a command line Git client):
+
+`git checkout -b <name of branch>`
+-	remove the `-b` flag to simply switch to the branch
+
+Remove a branch with command line:
+
+`git branch -d <name of branch>` ... removes it locally
+`git push origin --delete <remote name of branch>` ... removes it remotely (if you pushed and it appears on github)
+
+Feel free to view branches in the repo with `git branch -a`
