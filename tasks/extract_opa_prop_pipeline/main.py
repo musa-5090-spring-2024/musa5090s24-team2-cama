@@ -11,7 +11,7 @@ import googleapiclient.discovery  # type: ignore
 load_dotenv()
 DATA_DIR = pathlib.Path(__file__).parent  # / 'raw_data'
 
-
+'''
 def create_key(email: str) -> None:
     """Creates a key for a service account."""
 
@@ -39,9 +39,9 @@ def create_key(email: str) -> None:
 
     if not key["disabled"]:
         print("Created json key")
+'''
 
-
-if not(os.path.exists("keys/service-account-key.json")):
+if not (os.path.exists("keys/service-account-key.json")):
     create_key(os.getenv('AUTH_EMAIL'))
 
 
