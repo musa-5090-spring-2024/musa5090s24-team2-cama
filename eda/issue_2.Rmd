@@ -1,0 +1,48 @@
+---
+title: "data_sci_2"
+author: "Avani"
+date: "2024-03-27"
+output: html_document
+---
+This markdown files consists of the first exploratory analysis of the Philadelphia
+Property Tax Assessment data. We begin by setting up the required environment.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pacman)
+p_load(tidyverse, sf, corrr, corrplot)
+options(scipen = 999)
+```
+## Reading File
+With our environment set up, we are now going to read the data. 
+```{r cars}
+opa <- read.csv("opa_properties_public.csv")
+opa_sf <- st_read("opa_properties_public.geojson")
+glimpse(opa)
+
+unique(opa$category_code_description)
+unique(opa$fuel)
+table(opa$category_code_description)
+
+opa_test <- opa %>%
+  select (-parcel_number, -category_code, -objectid, - house_number, - house_extension,
+          - pin, - street_code, - zip_code, - geographic_ward, - census_tract, 
+          -exempt_land)
+
+cor_matrix_1 <- opa_test %>%
+  select_if(is.numeric)%>%
+  cor(use = "complete.obs")
+
+cor_matrix_1%>%
+  correlate() %>% 
+  autoplot() +
+  geom_text(aes(label = round(r,digits=2)),size = 2)
+
+corrplot(cor_matrix_1, method = "circle")
+
+
+opa_test <- opa_test %>%
+  select_if(is.numeric)
+reg.1 <- lm(market_value ~ ., data = opa_test)
+summary(reg.1)
+```
+
