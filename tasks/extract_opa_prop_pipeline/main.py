@@ -10,8 +10,8 @@ from google.cloud import api_keys_v2
 from google.cloud.api_keys_v2 import Key
 
 
-load_dotenv()
-DATA_DIR = pathlib.Path(__file__).parent  # / 'raw_data'
+load_dotenv("../.env")
+DATA_DIR = pathlib.Path(__file__).parent  
 
 '''
 def create_key(email: str) -> None:
