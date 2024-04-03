@@ -18,8 +18,8 @@ options(scipen = 999)
 ## Reading File
 With our environment set up, we are now going to read the data. 
 ```{r cars}
-opa <- read.csv("opa_properties_public.csv")
-opa_sf <- st_read("opa_properties_public.geojson")
+#opa <- read.csv("opa_properties_public.csv")
+#opa_sf <- st_read("opa_properties_public.geojson")
 glimpse(opa)
 
 hoods <- get_spatial_layer('https://services1.arcgis.com/a6oRSxEw6eIY5Zfb/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0')
@@ -38,16 +38,26 @@ table(opa$category_code_description)
 opa_test <- opa_sf %>%
   select(category_code, census_tract, depth, fireplaces, frontage,
          garage_spaces, mailing_zip, number_of_bathrooms, number_of_rooms, sale_date,
-         sale_price, total_livable_area, year_built)
+         sale_price, total_livable_area, year_built, location, parcel_number, owner_1)
 
 #filter by date and sale price
 opa_test$timestamp <- ymd_hms(opa_test$sale_date)
 opa_test <- opa_test %>% drop_na(sale_price)
 opa_test <- opa_test %>%
-  filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100, 
-         category_code == 1)
+  filter(
+    year(timestamp) > 2021, 
+    year(timestamp) < 2025, 
+    sale_price > 100,
+    category_code == '1 '
+    )
+
 
 opa_test <- opa_test[opa_test$sale_price < quantile(opa_test$sale_price,prob=1-5/100),]
+
+dupes <- opa_test %>% 
+  distinct(location, owner_1, sale_price, .keep_all = TRUE)
+
+
 
 #filter bundles, residential
 
