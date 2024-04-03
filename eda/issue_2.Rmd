@@ -9,6 +9,9 @@ Property Tax Assessment data. We begin by setting up the required environment.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(pacman)
+library(car)
+library(lubridate)
+library(arcpullr)
 p_load(tidyverse, sf, corrr, corrplot)
 options(scipen = 999)
 ```
@@ -19,14 +22,37 @@ opa <- read.csv("opa_properties_public.csv")
 opa_sf <- st_read("opa_properties_public.geojson")
 glimpse(opa)
 
+hoods <- get_spatial_layer('https://services1.arcgis.com/a6oRSxEw6eIY5Zfb/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0')
+
 unique(opa$category_code_description)
 unique(opa$fuel)
 table(opa$category_code_description)
 
-opa_test <- opa %>%
-  select (-parcel_number, -category_code, -objectid, - house_number, - house_extension,
-          - pin, - street_code, - zip_code, - geographic_ward, - census_tract, 
-          -exempt_land)
+#filter out unneeded and redundant variables
+# opa_test <- opa_sf %>%
+#   select (-parcel_number, -category_code, -objectid, - house_number, - house_extension,
+#           - pin, - street_code, - zip_code, - geographic_ward, - census_tract, 
+#           - exempt_land, - exempt_building, - market_value, - taxable_building, 
+#           - taxable_land)
+
+opa_test <- opa_sf %>%
+  select(category_code, census_tract, depth, fireplaces, frontage,
+         garage_spaces, mailing_zip, number_of_bathrooms, number_of_rooms, sale_date,
+         sale_price, total_livable_area, year_built)
+
+#filter by date and sale price
+opa_test$timestamp <- ymd_hms(opa_test$sale_date)
+opa_test <- opa_test %>% drop_na(sale_price)
+opa_test <- opa_test %>%
+  filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100, 
+         category_code == 1)
+
+opa_test <- opa_test[opa_test$sale_price < quantile(opa_test$sale_price,prob=1-5/100),]
+
+#filter bundles, residential
+
+#join with neighborhoods
+opa_hoods <- st_join(opa_test, hoods)
 
 cor_matrix_1 <- opa_test %>%
   select_if(is.numeric)%>%
@@ -39,10 +65,18 @@ cor_matrix_1%>%
 
 corrplot(cor_matrix_1, method = "circle")
 
+#opa_test <- opa_test %>%
+#  select_if(is.numeric)
 
-opa_test <- opa_test %>%
-  select_if(is.numeric)
-reg.1 <- lm(market_value ~ ., data = opa_test)
+reg.1 <- lm(sale_price ~ ., data = opa_test)
 summary(reg.1)
+vif(reg.1)
+
+opa_clean <- opa_test %>%
+  select(sale_price, fireplaces, garage_spaces, number_of_bathrooms, total_livable_area)
+
+reg.2 <- lm(sale_price ~ ., data = opa_clean)
+summary(reg.2)
+vif(reg.2)
 ```
 
