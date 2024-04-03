@@ -12,8 +12,11 @@ library(pacman)
 library(car)
 library(lubridate)
 library(arcpullr)
+library(sfdep)
 p_load(tidyverse, sf, corrr, corrplot)
 options(scipen = 999)
+
+source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 ```
 ## Reading File
 With our environment set up, we are now going to read the data. 
@@ -37,17 +40,24 @@ table(opa$category_code_description)
 
 opa_test <- opa_sf %>%
   select(category_code, census_tract, depth, fireplaces, frontage,
-         garage_spaces, mailing_zip, number_of_bathrooms, number_of_rooms, sale_date,
-         sale_price, total_livable_area, year_built)
+         garage_spaces, mailing_zip, number_of_bathrooms, number_of_rooms, owner_1,
+         sale_date, sale_price, total_livable_area, year_built)
 
 #filter by date and sale price
 opa_test$timestamp <- ymd_hms(opa_test$sale_date)
 opa_test <- opa_test %>% drop_na(sale_price)
 opa_test <- opa_test %>%
   filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100, 
-         category_code == 1)
+         category_code == '1 ')
 
 opa_test <- opa_test[opa_test$sale_price < quantile(opa_test$sale_price,prob=1-5/100),]
+
+opa_test <- opa_test[!duplicated(opa_test[c("owner_1", "sale_date", "sale_price")]), ]
+
+opa_test <- opa_test %>% 
+          mutate(nb = st_knn(geometry, k = 5),
+                 wt = st_weights(nb),
+                 price_lag = st_lag(sale_price, nb, wt))
 
 #filter bundles, residential
 
