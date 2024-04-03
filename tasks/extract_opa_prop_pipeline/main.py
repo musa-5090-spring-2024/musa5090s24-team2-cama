@@ -2,12 +2,13 @@ import os
 import pathlib
 import requests
 import time # for timeout testing
+import functions_framework
 from google.cloud import storage
 from dotenv import load_dotenv
-from google.oauth2 import service_account
-import googleapiclient.discovery  # type: ignore
-from google.cloud import api_keys_v2
-from google.cloud.api_keys_v2 import Key
+# from google.oauth2 import service_account
+# import googleapiclient.discovery  # type: ignore
+# from google.cloud import api_keys_v2
+# from google.cloud.api_keys_v2 import Key
 
 
 load_dotenv("../.env")
@@ -118,7 +119,8 @@ def extract_phl_opa_properties(download=False):
         start = time.time()
         download_phl_opa_properties(url, filename)
         end = time.time()
-        print(f"Time taken for download:\n\t{end-start} seconds.") # took 514 seconds in last trial
+        print(f"Time taken for download:\n\t{end-start} seconds.")  
+        # took 514 seconds in last trial
         
     # Upload the downloaded file to cloud storage
     BUCKET_NAME = os.getenv('RAW_DATA_LAKE_BUCKET')
@@ -130,21 +132,23 @@ def extract_phl_opa_properties(download=False):
     start = time.time()
     blob.upload_from_filename(filename, timeout=(60*60))
     end = time.time()
-    print(f"Time taken for upload:\n\t{end-start} seconds.") # took 47 minutes to successfully upload
+    print(f"Time taken for upload:\n\t{end-start} seconds.")  
+    # took 47 minutes to successfully upload
 
     print(f'Uploaded {blobname} to {BUCKET_NAME}')
 
     return "Uploaded to gs://{BUCKET_NAME}/{blobname} successfully"
 
 
-if __name__ == "__main__":
-    # check_google_auth()
-
+@functions_framework.http
+def extract_phl_opa_prop_main(request):
     # check if file exists before downloading        
-    extract_phl_opa_properties(
+    return extract_phl_opa_properties(
         True if not (os.path.exists(
             DATA_DIR / 'phl_opa_properties.csv'
             )
             ) else False)
 
-    # create_api_key("musa509s24-team2","")
+
+if __name__ == "__main__":
+    print(extract_phl_opa_prop_main())

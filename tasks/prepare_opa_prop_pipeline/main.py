@@ -4,6 +4,7 @@ import time  # for timeout testing
 import csv
 import pyproj
 import json
+import functions_framework
 from shapely import wkt
 from google.cloud import storage
 from dotenv import load_dotenv
@@ -120,10 +121,11 @@ def prepare_phl_opa_properties(download=False, process=False):
     print(f"Time taken for upload:\n\t{end-start} seconds.")
     # took 764 seconds to successfully upload
 
-    print(f"Uploaded to gs://{BUCKET_NAME}/{prepared_blobname} successfully")
+    return f"Uploaded to gs://{BUCKET_NAME}/{prepared_blobname} successfully"
 
 
-if __name__ == "__main__":
+@functions_framework.http
+def prepare_phl_opa_prop_main(request):
     '''
     makes directories on local machines if necessary,
     downloads, processes, and uploads processed data to prepared data bucket
@@ -136,5 +138,9 @@ if __name__ == "__main__":
     check_dirs([RAW_DATA_DIR, PREPARED_DATA_DIR]) 
 
     # check if file exists before downloading        
-    prepare_phl_opa_properties(
+    return prepare_phl_opa_properties(
         enforce_download(), enforce_processing())
+    
+
+if __name__ == "__main__":
+    print(prepare_phl_opa_properties())
