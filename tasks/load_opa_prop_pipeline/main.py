@@ -2,6 +2,7 @@ import os
 import pathlib
 import time  # for timeout testing
 import google
+import functions_framework
 from dotenv import load_dotenv
 from google.cloud import bigquery
 
@@ -142,7 +143,7 @@ def load_phl_opa_properties():
     end = time.time()
     print(f"Time taken for internal table load:\n\t{end-start} seconds.")  
     
-    print(f"Loaded {table_uri} into {dataset_name}.{table_name}\n\tand internal/native table {core_dataset_name}.{table_name}")
+    return f"Loaded {table_uri} into {dataset_name}.{table_name}\n\tand internal/native table {core_dataset_name}.{table_name}"
 
 
 def check_datasets(sets):
@@ -159,9 +160,15 @@ def check_datasets(sets):
             print(f"Dataset {set} already exists.", end='\n\n')
 
 
-if __name__ == "__main__":
-    
+@functions_framework.http
+def load_phl_opa_prop_main(request):
+    # ensure datasets tables are created in exist
     check_datasets([dataset_name, core_dataset_name])
 
     # check if file exists before downloading        
-    load_phl_opa_properties()
+    return load_phl_opa_properties()
+
+
+if __name__ == "__main__":
+    load_phl_opa_prop_main()
+    
