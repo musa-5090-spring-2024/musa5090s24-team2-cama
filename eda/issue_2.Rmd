@@ -19,10 +19,10 @@ options(scipen = 999)
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 ```
 ## Reading File
-With our environment set up, we are now going to read the data. 
+With our environment set up, we are now going to read the data.
 ```{r cars}
-opa <- read.csv("opa_properties_public.csv")
-opa_sf <- st_read("opa_properties_public.geojson")
+#opa <- read.csv("opa_properties_public.csv")
+#opa_sf <- st_read("opa_properties_public.geojson")
 glimpse(opa)
 
 hoods <- get_spatial_layer('https://services1.arcgis.com/a6oRSxEw6eIY5Zfb/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0')
@@ -34,30 +34,40 @@ table(opa$category_code_description)
 #filter out unneeded and redundant variables
 # opa_test <- opa_sf %>%
 #   select (-parcel_number, -category_code, -objectid, - house_number, - house_extension,
-#           - pin, - street_code, - zip_code, - geographic_ward, - census_tract, 
-#           - exempt_land, - exempt_building, - market_value, - taxable_building, 
+#           - pin, - street_code, - zip_code, - geographic_ward, - census_tract,
+#           - exempt_land, - exempt_building, - market_value, - taxable_building,
 #           - taxable_land)
 
 opa_test <- opa_sf %>%
   select(category_code, census_tract, depth, fireplaces, frontage,
-         garage_spaces, mailing_zip, number_of_bathrooms, number_of_rooms, owner_1,
-         sale_date, sale_price, total_livable_area, year_built)
+         garage_spaces, mailing_zip, number_of_bathrooms, number_of_rooms, sale_date,
+         sale_price, total_livable_area, year_built, location, parcel_number, owner_1)
 
 #filter by date and sale price
 opa_test$timestamp <- ymd_hms(opa_test$sale_date)
 opa_test <- opa_test %>% drop_na(sale_price)
 opa_test <- opa_test %>%
-  filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100, 
+
+filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100,
          category_code == '1 ')
 
 opa_test <- opa_test[opa_test$sale_price < quantile(opa_test$sale_price,prob=1-5/100),]
 
-opa_test <- opa_test[!duplicated(opa_test[c("owner_1", "sale_date", "sale_price")]), ]
+dupes <- opa_test %>%
+  distinct(location, owner_1, sale_price, .keep_all = TRUE)
 
-opa_test <- opa_test %>% 
+opa_test <- opa_test %>%
           mutate(nb = st_knn(geometry, k = 5),
                  wt = st_weights(nb),
                  price_lag = st_lag(sale_price, nb, wt))
+
+
+
+
+
+
+
+
 
 #filter bundles, residential
 
@@ -69,7 +79,7 @@ cor_matrix_1 <- opa_test %>%
   cor(use = "complete.obs")
 
 cor_matrix_1%>%
-  correlate() %>% 
+  correlate() %>%
   autoplot() +
   geom_text(aes(label = round(r,digits=2)),size = 2)
 
