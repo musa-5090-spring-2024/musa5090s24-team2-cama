@@ -15,9 +15,9 @@ from dotenv import load_dotenv
 # from google.cloud import bigquery
 
 
-load_dotenv("../.env")
-OVERWRITE_DOWNLOAD = False
-OVERWRITE_PROCESSED = False
+load_dotenv(".env")
+OVERWRITE_DOWNLOAD = True
+OVERWRITE_PROCESSED = True
 DATA_DIR = pathlib.Path(__file__).parent 
 RAW_DATA_DIR = DATA_DIR / 'raw_data'
 PREPARED_DATA_DIR = DATA_DIR / 'prepared_data'
@@ -58,7 +58,7 @@ def enforce_processing():
 
 def download_raw_data():
     # Download the data from the bucket
-    raw_blobname = "phl_opa_properties/phl_opa_properties.csv"
+    raw_blobname = "opa_properties/phl_opa_properties.csv"
     blob = storage_client.bucket(
         os.getenv('RAW_DATA_LAKE_BUCKET')).blob(raw_blobname)
     start = time.time()
@@ -112,11 +112,11 @@ def prepare_phl_opa_properties(download=False, process=False):
         
     print("Uploading processed PHL OPA Properties data...")    
     # Upload the prepared data to the bucket
-    prepared_blobname = "phl_opa_properties/phl_opa_properties.jsonl"
+    prepared_blobname = "opa_properties/data.jsonl"
     blob = bucket.blob(prepared_blobname)
     
     start = time.time()
-    blob.upload_from_filename(prepared_filename, timeout=60*60)
+    blob.upload_from_filename(prepared_filename, timeout=60*3)
     end = time.time()
     print(f"Time taken for upload:\n\t{end-start} seconds.")
     # took 764 seconds to successfully upload
@@ -143,4 +143,4 @@ def prepare_phl_opa_prop_main(request):
     
 
 if __name__ == "__main__":
-    print(prepare_phl_opa_properties())
+    print(prepare_phl_opa_properties("request"))
