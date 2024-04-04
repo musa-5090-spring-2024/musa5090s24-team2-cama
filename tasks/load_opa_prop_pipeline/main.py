@@ -7,19 +7,19 @@ from dotenv import load_dotenv
 from google.cloud import bigquery
 
 
-load_dotenv("../.env")
+load_dotenv(".env")
 DATA_DIR = pathlib.Path(__file__).parent  
 
 PROJECT_ID = os.getenv("PROJECT_ID")
 BUCKET_NAME = os.getenv('PREP_DATA_LAKE_BUCKET')
 dataset_name = os.getenv('SOURCE_DATASET')
 core_dataset_name = os.getenv('CORE_DATASET')
-prepared_blobname = 'phl_opa_properties/phl_opa_properties.jsonl'
+prepared_blobname = 'opa_properties/data.jsonl'
 table_name = 'phl_opa_properties'
 table_uri = f'gs://{BUCKET_NAME}/{prepared_blobname}'
 
 create_table_query = f'''
-CREATE OR REPLACE EXTERNAL TABLE {dataset_name}.{table_name} (
+CREATE OR REPLACE EXTERNAL TABLE `{dataset_name}.{table_name}` (
   `objectid` STRING,
   `assessment_date` STRING,
   `basements` STRING,
@@ -98,7 +98,7 @@ CREATE OR REPLACE EXTERNAL TABLE {dataset_name}.{table_name} (
   `pin` STRING,
   `building_code_new` STRING,
   `building_code_description_new` STRING,
-  `geog` STRING,
+  `geog` GEOGRAPHY,
 )
 OPTIONS (
   description = 'Philadelphia OPA Properties - Source',
@@ -106,10 +106,6 @@ OPTIONS (
   uris = ['{table_uri}']
 );
 
-LOAD DATA OVERWRITE {dataset_name}.{table_name} 
-FROM FILES (
-  format =  'JSON',
-  uris = ['gs://{BUCKET_NAME}/{prepared_blobname}']);
 '''
 
 create_core_table_query = f'''
@@ -121,10 +117,11 @@ AS (
 );
 
 ALTER TABLE {core_dataset_name}.{table_name}
-ADD `property_id` STRING;
+ADD COLUMN property_id STRING;
 
 UPDATE {core_dataset_name}.{table_name}
-SET `property_id` = `parcel_number`;
+SET `property_id` = `parcel_number`
+WHERE TRUE;
 '''
 
 
@@ -170,5 +167,5 @@ def load_phl_opa_prop_main(request):
 
 
 if __name__ == "__main__":
-    load_phl_opa_prop_main()
+    load_phl_opa_prop_main("Hello World")
     
