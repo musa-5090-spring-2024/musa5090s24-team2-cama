@@ -53,3 +53,20 @@ gcloud functions deploy extract_phl_opa_properties --gen2 --region=us-central1 -
 #### *load_phl_opa_properties*:
 
 #### *run_sql*:
+
+## CORS configuration
+
+`gcloud storage buckets update gs://musa5090s24_team02_public/ --cors-file=public_cors_config.json`
+
+## JSON File contents
+
+`
+[
+    {
+      "origin": ["*"],
+      "method": ["GET","POST","PUT","OPTIONS","HEAD","DELETE"],
+      "responseHeader": ["*"],
+      "maxAgeSeconds": 3600
+    }
+]
+`
