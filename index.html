@@ -10,23 +10,46 @@
 
 <body>
     <header>
-        <h1 class="title">Philadelphia Property Tax Assessing Tool</h1>
+        <h1 class="title">Philadelphia Property Tax Assessing Tool:</h1>
+        <h2>Computer-Assisted Mass Appraisal (CAMA) Project</h2>
     </header>
 
     <main>
-        <h2>Description:</h2>
-        <p>Project description here.</p>
+        <div class="description">
+            <h3>Project Description:</h3>
+            <p>Project description here.</p>
+        </div>
+        
+        <div class="description">
+            <h3>Summary of Users & Motivations</h3>
+            <ul>
+                <li>
+                    <strong>Property Assessors (i.e. the Office of Property Assessments -- OPA):</strong>
+                    <p>City coffers are heavily dependent on property taxes. Property taxes are based on current market values for properties, but the market is constantly shifting. Keeping property valuations (and thus the city's tax base) up to date without a statistical solution is a time and labor intensive process. In this way, this tool provides a one-click way to get an initial assessment for every property in the city.</p>
+                </li>
+                <li>
+                    <strong>Philadelphia Property Owners:</strong>
+                    <p>The city's property assessors update valuations every 3-4 years. These updates often catch at least some property owners by surprise, as their tax rates increase. Therefore, this tool enables property owners to check at any moment how the city's valuation of your property is trending, and what that might mean for future taxes.</p>
+                </li>
+            </ul>
+            
+            <div class="user-selection">
+                <a href="/ui/reviewer/reviewer.html">
+                    <button class="user-choice">I'm a property assessor</button>
+                </a>
 
-        <a href="/ui/reviewer/reviewer.html">
-            <button class="first-choice">I'm a property assessor</button>
-        </a>
-        <a href="/ui/widget/widget.html">
-            <button class="first-choice">I'm a property owner</button>
-        </a>
+                <a href="/ui/widget/widget.html">
+                    <button class="user-choice">I'm a property owner</button>
+                </a>
+            </div>
+        </div>
+ 
     </main>
 
     <footer>
-
+        <p id="footnote">
+            <strong>2024 CAMA Project:</strong> Last update: April 2024.
+        </p>
     </footer>
 
     <!-- add leaflet library -->
