@@ -58,7 +58,19 @@ gcloud functions deploy extract_phl_opa_properties --gen2 --region=us-central1 -
 
 `gcloud storage buckets update gs://musa5090s24_team02_public/ --cors-file=public_cors_config.json`
 
-## JSON File contents
+<ins>**Ensure the path to public_cors_config.json is correct.**
+* it is currently located at the root folder of the repository*</ins>
+
+### View current configuration
+
+run `gcloud storage buckets describe gs://<bucket_name>` in any gcloud accessible CLI
+
+for example, use the following for the public bucket...
+
+`gcloud storage buckets describe gs://musa5090s24_team02_public`
+
+
+### JSON File contents
 
 `
 [
