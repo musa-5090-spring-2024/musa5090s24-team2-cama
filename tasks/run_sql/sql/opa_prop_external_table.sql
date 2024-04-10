@@ -1,4 +1,4 @@
-CREATE OR REPLACE EXTERNAL TABLE `{dataset_name}.{table_name}` (
+CREATE OR REPLACE EXTERNAL TABLE `core.phl_opa_properties` (
     `objectid` STRING,
     `assessment_date` STRING,
     `basements` STRING,
