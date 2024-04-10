@@ -13,6 +13,8 @@ library(car)
 library(lubridate)
 library(arcpullr)
 library(sfdep)
+library(randomForest)
+library(caret)
 p_load(tidyverse, sf, corrr, corrplot)
 options(scipen = 999)
 
@@ -21,11 +23,13 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 ## Reading File
 With our environment set up, we are now going to read the data.
 ```{r cars}
-#opa <- read.csv("opa_properties_public.csv")
-#opa_sf <- st_read("opa_properties_public.geojson")
+opa <- read.csv("opa_properties_public.csv")
+opa_sf <- st_read("opa_properties_public.geojson")
 glimpse(opa)
 
 hoods <- get_spatial_layer('https://services1.arcgis.com/a6oRSxEw6eIY5Zfb/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0')
+
+districts <- get_spatial_layer('https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Planning_Districts/FeatureServer/0/') %>% st_make_valid()
 
 unique(opa$category_code_description)
 unique(opa$fuel)
@@ -45,34 +49,26 @@ opa_test <- opa_sf %>%
 
 #filter by date and sale price
 opa_test$timestamp <- ymd_hms(opa_test$sale_date)
-opa_test <- opa_test %>% drop_na(sale_price)
+#opa_test <- opa_test %>% drop_na(sale_price)
 opa_test <- opa_test %>%
-
-filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100,
-         category_code == '1 ')
+  filter(year(timestamp) > 2021, year(timestamp) < 2025, sale_price > 100,
+         category_code == '1 ', !is.na(sale_price))
 
 opa_test <- opa_test[opa_test$sale_price < quantile(opa_test$sale_price,prob=1-5/100),]
 
-dupes <- opa_test %>%
+opa_test <- opa_test %>%
   distinct(location, owner_1, sale_price, .keep_all = TRUE)
 
+#price lag
 opa_test <- opa_test %>%
           mutate(nb = st_knn(geometry, k = 5),
                  wt = st_weights(nb),
                  price_lag = st_lag(sale_price, nb, wt))
 
-
-
-
-
-
-
-
-
 #filter bundles, residential
 
 #join with neighborhoods
-opa_hoods <- st_join(opa_test, hoods)
+opa_hoods <- st_join(opa_test, districts)
 
 cor_matrix_1 <- opa_test %>%
   select_if(is.numeric)%>%
@@ -85,6 +81,33 @@ cor_matrix_1%>%
 
 corrplot(cor_matrix_1, method = "circle")
 
+opa_hoods <- opa_hoods %>%
+  select(fireplaces, sale_price, garage_spaces, number_of_bathrooms, 
+         total_livable_area, price_lag, ABBREV)%>%
+  mutate(fireplaces = if_else(is.na(fireplaces), median(fireplaces, na.rm = TRUE), 
+                              fireplaces))%>%
+  mutate(garage_spaces = if_else(is.na(garage_spaces), median(garage_spaces, na.rm = 
+                                                                TRUE), garage_spaces))%>%
+  mutate(number_of_bathrooms = if_else(is.na(number_of_bathrooms), 
+                                       median(number_of_bathrooms, na.rm = TRUE), 
+                                       number_of_bathrooms))%>%
+  mutate(total_livable_area = if_else(is.na(total_livable_area), 
+                                      median(total_livable_area, na.rm = TRUE), 
+                                      total_livable_area))
+
+opa_clean <- opa_hoods %>%
+  select(sale_price, fireplaces, garage_spaces, number_of_bathrooms, total_livable_area, 
+         price_lag, ABBREV)
+
+#random forest
+opa_hoods$ABBREV <- as.factor(opa_hoods$ABBREV)
+opa_clean <- model.matrix(~ ABBREV - 1, opa_hoods) %>% as.data.frame()
+opa_clean <- cbind(st_drop_geometry(opa_hoods), st_drop_geometry(opa_clean))
+
+rf1 <- randomForest(sale_price ~ ., data = 
+                      opa_clean%>%st_drop_geometry()%>%select(-ABBREV))
+summary(rf1$rsq)
+
 #opa_test <- opa_test %>%
 #  select_if(is.numeric)
 
@@ -92,11 +115,26 @@ reg.1 <- lm(sale_price ~ ., data = opa_test)
 summary(reg.1)
 vif(reg.1)
 
-opa_clean <- opa_test %>%
-  select(sale_price, fireplaces, garage_spaces, number_of_bathrooms, total_livable_area)
-
-reg.2 <- lm(sale_price ~ ., data = opa_clean)
+reg.2 <- lm(sale_price ~ ., data = opa_clean%>%st_drop_geometry())
 summary(reg.2)
 vif(reg.2)
 ```
+```{r cross_validation, message=FALSE, results='hide'}
 
+fitControl <- trainControl(method = "cv", number = 100)
+set.seed(825)
+
+reg.cv <- 
+  train(sale_price ~ ., data = st_drop_geometry(opa_clean) %>% 
+                                dplyr::select(sale_price, fireplaces, garage_spaces, 
+                                              number_of_bathrooms, total_livable_area, 
+                                              price_lag, DIST_NAME), 
+     method = "lm", trControl = fitControl, na.action = na.pass)
+
+ggplot(reg.cv$resample, aes(x=MAE)) +
+  geom_histogram(fill = "#FA7800", color = "white") +
+  labs(
+    title = "Distribution of MAE Across 100-Fold Cross Validation",
+    subtitle = "",
+    caption = "Figure 10")
+```
