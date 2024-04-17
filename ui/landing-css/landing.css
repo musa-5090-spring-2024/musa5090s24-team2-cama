@@ -1,0 +1,49 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    color: rgb(64, 64, 64);
+    font-family: sans-serif;
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+header {
+    box-sizing: border-box;
+    height: 6rem;
+    padding: 1rem;
+}
+
+main {
+    box-sizing: border-box;
+    height: calc(100vh - 8rem);
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+}
+
+footer {
+    box-sizing: border-box;
+    padding: 1rem;
+    padding-top: 0;
+    height: 2rem;
+}
+
+.description {
+    width: 50%;
+}
+
+.user-selection {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+#footnote {
+    margin: 0;
+    font-size: 14px;
+}
