@@ -3,7 +3,6 @@ import pathlib
 from google.cloud import storage
 from dotenv import load_dotenv
 import os
-import time
 
 load_dotenv(".env")
 DATA_DIR = pathlib.Path(__file__).parent
@@ -27,11 +26,7 @@ def extract_opa_assess_pipeline():
     bucket = storage_client.bucket(BUCKET_NAME)
     blob = bucket.blob(blobname)
     print("Starting file upload.")
-    start = time.time()
-    blob.upload_from_filename(filename, timeout=(60*3))
-    end = time.time()
-    print(f"Time taken for upload:\n\t{end-start} seconds.")  
-    # took 47 minutes to successfully upload
+    blob.upload_from_filename(filename, timeout=(60*3)) 
     print(f'Uploaded {blobname} to {BUCKET_NAME}')
     return f"Uploaded to gs://{BUCKET_NAME}/{blobname} successfully"
 
