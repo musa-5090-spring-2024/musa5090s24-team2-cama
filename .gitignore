@@ -10,6 +10,7 @@ node_modules/
 
 # Data
 data/
+raw_data/
 
 # Sensitive files
 keys/
