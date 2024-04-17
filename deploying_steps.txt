@@ -129,4 +129,7 @@ docker push us-central1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY_NAME]/[IMAGE_NAM
 example: docker push us-central1-docker.pkg.dev/my-gcloud-project/my-docker-repo/my-python-app:latest
 
 Step 15: Deploy the function on Google Service using the Google Image URl
-I think you can copy this url from somewhere.
+Once the function has been loaded, deploy it using the gooey setup.
+https://console.cloud.google.com/run/create?hl=en&project=musa509s24-team2
+
+
