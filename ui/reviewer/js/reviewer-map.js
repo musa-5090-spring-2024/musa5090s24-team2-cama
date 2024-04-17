@@ -1,4 +1,4 @@
-const url = 'https://storage.googleapis.com/musa509s23_team02_public/tiles/properties/{z}/{x}/{y}.pbf';
+const url = 'https://storage.googleapis.com/musa5090s24_team02_public/tiles/properties/{z}/{x}/{y}.pbf';
 
 function initializeMap() {
   const map = L.map('map', { zoomSnap: 0, maxZoom: 20, minZoom: 12 }).setView([39.99, -75.15], 12); // zoomSnap 0 make the zoom level to real number
@@ -13,6 +13,7 @@ function initializeMap() {
     vectorTileLayerStyles: {
       // A plain set of L.Path options.
       'property_tile_info': function (properties) {
+
         if (properties.current_assessed_value < 160000) {
           return {
             weight: 0,
@@ -67,62 +68,18 @@ function initializeMap() {
           };
         }
       },
-      // A function for styling features dynamically, depending on their
-      // properties and the map's zoom level
-      // admin: function(properties, zoom) {
-      //   var level = properties.admin_level;
-      //   var weight = 1;
-      //   if (level == 2) {weight = 4;}
-      //   return {
-      //       weight: weight,
-      //       color: '#cf52d3',
-      //       dashArray: '2, 6',
-      //       fillOpacity: 0
-      //   }
-      // },
-      // A function for styling features dynamically, depending on their
-      // properties, the map's zoom level, and the layer's geometry
-      // dimension (point, line, polygon)
-      // 'property_tile_info': function(properties, zoom, geometryDimension) {
-      // if (geometryDimension === 1) {   // point
-      //   return ({
-      //     radius: 5,
-      //     color: '#cf52d3',
-      //   });
-      // }
-
-      // if (geometryDimension === 2) {   // line
-      //   return ({
-      //     weight: 1,
-      //     color: '#cf52d3',
-      //     dashArray: '2, 6',
-      //     fillOpacity: 0,
-      //   });
-      // }
-
-      // if (geometryDimension === 3) {   // polygon
-      //   return ({
-      //     weight: 1,
-      //     fillColor: '#9bc2c4',
-      //     fillOpacity: 1,
-      //     fill: true,
-      //   });
-      // }
-      // },
-      // An 'icon' option means that a L.Icon will be used
-      // place: {
-      //   icon: new L.Icon.Default(),
-      // },
-      // road: [],
     },
   };
 
-  L.vectorGrid.protobuf(url, vectorTileOptions).addTo(map);
+  const vectordata = L.vectorGrid.protobuf(url, vectorTileOptions).addTo(map);
+  window.vectordata = vectordata;
 
     //cross origin resource sharing (CORS)
 
-    return map;
+  return map;
 }
+
+// vectordata.redraw();
 
 export {
     initializeMap,
