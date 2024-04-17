@@ -22,7 +22,7 @@ def extract_opa_assess_pipeline():
     BUCKET_NAME = os.getenv('PREP_DATA_LAKE_BUCKET')
     blobname = 'opa_assessments/assessments.csv'
     print(os.getcwd())
-    storage_client = storage.Client(project=os.getenv("PROJECT_ID"))
+    storage_client = storage.Client()
     bucket = storage_client.bucket(BUCKET_NAME)
     blob = bucket.blob(blobname)
     print("Starting file upload.")
