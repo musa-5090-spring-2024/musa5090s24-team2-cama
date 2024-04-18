@@ -3,11 +3,13 @@ import pathlib
 from google.cloud import storage
 from dotenv import load_dotenv
 import os
+import functions_framework
 
 load_dotenv(".env")
 DATA_DIR = pathlib.Path(__file__).parent
 
-def extract_opa_assess_pipeline():
+@functions_framework.http
+def extract_opa_assess_pipeline(request):
     url = 'https://opendata-downloads.s3.amazonaws.com/assessments.csv'
     r = requests.get(url)
     raw_data_folder = DATA_DIR / 'raw_data'
@@ -28,5 +30,3 @@ def extract_opa_assess_pipeline():
     blob.upload_from_filename(filename, timeout=(60*3)) 
     print(f'Uploaded {blobname} to {BUCKET_NAME}')
     return f"Uploaded to gs://{BUCKET_NAME}/{blobname} successfully"
-
-extract_opa_assess_pipeline()
