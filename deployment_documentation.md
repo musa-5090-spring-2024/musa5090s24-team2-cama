@@ -45,7 +45,7 @@ gcloud functions deploy extract_phl_opa_properties
 
 	- one-line version
 ```shell
-gcloud functions deploy extract_phl_opa_properties --gen2 --region=us-central1 --runtime=python312 --source=.  --entry-point=extract_phl_opa_prop_main  --service-account="data-pipeline-robot-2024@musa509s24-team2.iam.gserviceaccount.com"  --timeout=60s  --memory=1024Mi  --no-allow-unauthenticated --trigger-http
+gcloud functions deploy extract_phl_opa_properties --gen2 --region=us-central1 --runtime=python312 --source=.  --entry-point=extract_phl_opa_prop_main  --service-account="data-pipeline-robot-2024@musa509s24-team2.iam.gserviceaccount.com"  --timeout=60s  --memory=1024Mi  --no-allow-unauthenticated --trigger-http --env-vars-file=../.env
 ```
 
 #### *prepare_phl_opa_properties*:
@@ -53,6 +53,13 @@ gcloud functions deploy extract_phl_opa_properties --gen2 --region=us-central1 -
 #### *load_phl_opa_properties*:
 
 #### *run_sql*:
+
+#### *extract_phl_pwd_parcels*:
+```shell
+gcloud functions deploy extract_phl_pwd_parcels --gen2 --region=us-central1 --runtime=python312 --source=.  --entry-point=extract_pwd_parcel_main  --service-account="data-pipeline-robot-2024@musa509s24-team2.iam.gserviceaccount.com"  --timeout=60s  --memory=1024Mi  --no-allow-unauthenticated --trigger-http 
+```
+* hope to add `--env-vars-file=../.env`*
+
 
 ## CORS configuration
 
