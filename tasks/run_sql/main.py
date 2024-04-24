@@ -1,3 +1,4 @@
+
 import os
 import pathlib
 import functions_framework
@@ -5,8 +6,14 @@ from dotenv import load_dotenv
 from google.cloud import bigquery
 from check_bq import check_datasets
 
-
+from dotenv import load_dotenv
 load_dotenv()
+
+import os
+import pathlib
+import functions_framework
+from google.cloud import bigquery
+
 DIR_NAME = pathlib.Path(__file__).parent
 SQL_DIR_NAME = DIR_NAME / 'sql'
 
@@ -26,6 +33,9 @@ def run_sql(request):
     # Read the SQL file specified in the request
     sql_path = SQL_DIR_NAME / str(request.args.get('sql'))
     print(sql_path)
+    # Read the SQL file specified in the request
+    sql_path = SQL_DIR_NAME / request.args.get('sql')
+
 
     # Check that the file exists
     if (not sql_path.exists()) or (not sql_path.is_file()):

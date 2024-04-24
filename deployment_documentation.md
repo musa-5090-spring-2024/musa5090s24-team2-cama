@@ -88,4 +88,37 @@ for example, use the following for the public bucket...
       "maxAgeSeconds": 3600
     }
 ]
+
+`
+
+## Workflow Details
+
+#### <ins>YAML</ins>
+`
+#
+# This workflow passes the region where the workflow is deployed
+# to the Wikipedia API and returns a list of related Wikipedia articles.
+# A region is retrieved from the GOOGLE_CLOUD_LOCATION system variable
+# unless you input your own search term; for example, {"searchTerm": "asia"}.
+main:
+    params: [input]
+    steps:
+    - extractPHLPropertyData:
+        call: http.post
+        args:
+            url: https://us-central1-musa509s24-team2.cloudfunctions.net/extract_phl_opa_properties
+            auth:
+                type: OIDC
+    - preparePHLPropertyData:
+        call: http.post
+        args:
+            url: https://prepare-phl-opa-properties-u7ppop2rpa-uc.a.run.app # https://us-central1-musa509s24-team2.cloudfunctions.net/_phl_opa_properties
+            auth:
+                type: OIDC
+    - loadPHLPropertyData:
+        call: http.post
+        args:
+            url: https://us-central1-musa509s24-team2.cloudfunctions.net/load_phl_opa_properties
+            auth:
+                type: OIDC
 `
