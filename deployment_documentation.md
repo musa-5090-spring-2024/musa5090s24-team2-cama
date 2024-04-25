@@ -30,7 +30,7 @@ gcloud functions deploy extract_phl_opa_properties \
 
 - Windows
 ```shell
-gcloud functions deploy extract_phl_opa_properties 
+gcloud functions deploy extract_phl_opa_properties `
 --gen2 `
 --region=us-central1 `
 --runtime=python312 `
@@ -54,12 +54,29 @@ gcloud functions deploy extract_phl_opa_properties --gen2 --region=us-central1 -
 
 #### *run_sql*:
 
+
+#### *load_opa_assessments*:
+
+- Windows
+gcloud functions deploy extract_phl_opa_assess `
+--gen2 `
+--region=us-central1 `
+--runtime=python38 `
+--source=. `
+--entry-point=extract_opa_assess_main `
+--service-account="data-pipeline-robot-2024@musa509s24-team2.iam.gserviceaccount.com" `
+--timeout=60s `
+--memory=2048Mi `
+--set-env-vars=PREP_DATA_LAKE_BUCKET=musa509s24_team02_prepared_data `
+--no-allow-unauthenticated `
+--trigger-http
+===
+
 #### *extract_phl_pwd_parcels*:
 ```shell
 gcloud functions deploy extract_phl_pwd_parcels --gen2 --region=us-central1 --runtime=python312 --source=.  --entry-point=extract_pwd_parcel_main  --service-account="data-pipeline-robot-2024@musa509s24-team2.iam.gserviceaccount.com"  --timeout=60s  --memory=1024Mi  --no-allow-unauthenticated --trigger-http 
 ```
 * hope to add `--env-vars-file=../.env`*
-
 
 ## CORS configuration
 
