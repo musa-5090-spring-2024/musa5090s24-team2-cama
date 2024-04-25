@@ -41,4 +41,8 @@ AS (
 );
 
 ALTER TABLE core.pwd_parcels
-ADD COLUMN property_id STRING;
+ADD COLUMN property_id INT64;
+
+UPDATE core.pwd_parcels
+SET `property_id` = `brt_id`
+WHERE TRUE;
