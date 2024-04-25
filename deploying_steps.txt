@@ -1,0 +1,135 @@
+Here are the steps required to deploy the python script to Google Cloud Service
+
+
+Step 1: Install Docker [https://docs.docker.com/get-docker/]
+
+Step 2: Connect your Python script to data stored in Cloud Repository
+
+To do so, install the google cloud storage package 
+
+pip install --upgrade google-cloud-storage 
+
+Step 3: Authenticate your Session
+This should connect your local environment with the clean data that has been uploaded to Google Cloud Storage. The command below ***should*** accomplish this.
+
+export GOOGLE_APPLICATION_CREDENTIALS= "export GOOGLE_APPLICATION_CREDENTIALS= "/Users/avani/Documents/cloud_comp/data_sci/musa509s24-team2-efc36e309dc6.json"
+
+
+Step 4: Accessing the Data in the Script
+
+The following script is ChatGPT guided. It doens't work, so feel free to tinker. 
+
+from google.cloud import storage
+
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    # Create a storage client using the Google Cloud Storage Client
+    storage_client = storage.Client()
+    
+    # Access the specified bucket
+    bucket = storage_client.bucket(bucket_name)
+    
+    # Access the specified blob (file) within the bucket
+    blob = bucket.blob(source_blob_name)
+    
+    # Download the blob to a local file
+    blob.download_to_filename(destination_file_name)
+    
+    # Print a confirmation message
+    print(f"Blob {source_blob_name} downloaded to {destination_file_name}.")
+
+download_blob('musa509s24_team02_prepared_data', 'data.jsonl', 'testdata.jsonl')
+
+
+Step 5: Wrap up your script
+Finish the script, store any requirements as requirements.txt. 
+
+Step 6: Step 3: Create a Dockerfile
+The Dockerfile is a text document that contains all the commands a user could call to assemble an image. Here’s how you can create one for a typical Python application:
+
+Open your text editor and create a new file named Dockerfile (no extension) in the same directory as your Python script.
+
+Edit the Dockerfile to include the following:
+
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "your_script.py"] 
+
+REPLACE your_script WITH ACTUAL SCRIPT NAME
+
+Step 7: Build the docker image
+docker build -t my-python-app .
+
+Here, my-python-app is the name you want to give your Docker image. You can choose any name you prefer.
+
+Step 8: Run container locally
+Run the container locally to make sure that the script is working fine. Idk how this would be relevant for our
+model, but putting it here just incase for testing.
+
+docker run -p 4000:8080 my-python-app
+
+Step 10: Install Gcloud CLI 
+This helps docker authenticate with google services. Download it here
+https://cloud.google.com/sdk/docs/install
+
+Step 11: Enable Artifact API
+
+gcloud services enable artifactregistry.googleapis.com
+
+Step 12: Create a repository to store data
+gcloud artifacts repositories create [REPOSITORY_NAME] \
+    --repository-format=docker \
+    --location=[LOCATION] \
+    --description="Docker repository"
+
+Example:
+gcloud artifacts repositories create my-docker-repo \
+    --repository-format=docker \
+    --location=us-central1 \
+    --description="Docker repository"
+
+Step 13: Configure authetication 
+
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+Step 12: Push script image to google cloud registry
+
+docker push gcr.io/[PROJECT_ID]/[IMAGE_NAME]:[TAG]
+
+Step 13: Tag the docker image
+Name your docker file so that it is easy to read.
+docker tag [LOCAL_IMAGE_NAME] gcr.io/[PROJECT_ID]/[IMAGE_NAME]:[TAG]
+
+[LOCAL_IMAGE_NAME] with the name of your image on your local machine (e.g., my-python-app).
+[PROJECT_ID] with your Google Cloud project ID.
+[IMAGE_NAME] with the name you want to give your image in the registry.
+[TAG] with your chosen tag for the image, like latest or a version number (e.g., v1).
+
+Example: docker tag my-python-app gcr.io/my-gcloud-project/my-python-app:latest
+
+Step 14: Push to Google Artifact Repository
+docker push us-central1-docker.pkg.dev/[PROJECT_ID]/[REPOSITORY_NAME]/[IMAGE_NAME]:[TAG]
+
+example: docker push us-central1-docker.pkg.dev/my-gcloud-project/my-docker-repo/my-python-app:latest
+
+Step 15: Deploy the function on Google Service using the Google Image URl
+Once the function has been loaded, deploy it using the gooey setup.
+https://console.cloud.google.com/run/create?hl=en&project=musa509s24-team2
+
+
