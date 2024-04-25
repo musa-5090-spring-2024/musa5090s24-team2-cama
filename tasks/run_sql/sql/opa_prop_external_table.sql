@@ -1,4 +1,4 @@
-CREATE OR REPLACE EXTERNAL TABLE `core.phl_opa_properties` (
+CREATE OR REPLACE EXTERNAL TABLE `source.phl_opa_properties` (
     `objectid` STRING,
     `assessment_date` STRING,
     `basements` STRING,
@@ -77,10 +77,10 @@ CREATE OR REPLACE EXTERNAL TABLE `core.phl_opa_properties` (
     `pin` STRING,
     `building_code_new` STRING,
     `building_code_description_new` STRING,
-    `geog` GEOGRAPHY,
+    `geog` GEOGRAPHY
 )
 OPTIONS (
     description = 'Philadelphia OPA Properties - Source',
     format = 'JSON',
-    uris = ['{table_uri}']
+    uris = ['gs://musa509s24_team02_prepared_data/opa_properties/data.jsonl']
 );
