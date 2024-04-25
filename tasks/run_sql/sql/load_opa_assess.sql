@@ -14,3 +14,9 @@ OPTIONS (
     uris = ['gs://musa509s24_team02_prepared_data/opa_assessments/assessments.csv'],
     skip_leading_rows = 1
 );
+
+CREATE OR REPLACE TABLE `core.opa_assessments`
+AS (
+    SELECT *
+    FROM `source.opa_assessments`
+);
