@@ -35,7 +35,8 @@ AS (
             CAST(num_accounts AS INT64) AS num_accounts,
             CAST(gross_area AS FLOAT64) AS gross_area,
             CAST(shape__area AS FLOAT64) AS shape__area,
-            CAST(shape__length AS FLOAT64) AS shape__length
+            CAST(shape__length AS FLOAT64) AS shape__length,
+            CAST(ST_GEOGFROMGEOJSON(geog, make_valid => TRUE) AS GEOGRAPHY) AS geog
         )
     FROM source.pwd_parcels
 );
