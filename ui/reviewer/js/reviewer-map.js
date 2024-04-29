@@ -85,7 +85,7 @@ function handleRadioSelection(vectordata) {
 }
 
 function initializeMap() {
-  const map = L.map('map', { zoomSnap: 0, maxZoom: 20, minZoom: 12 }).setView([39.99, -75.15], 12); // zoomSnap 0 make the zoom level to real number
+  const map = L.map('map', { zoomSnap: 0, maxZoom: 20, minZoom: 12 }).setView([39.96, -75.14], 12.6); // zoomSnap 0 make the zoom level to real number
   const baseTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
   });
