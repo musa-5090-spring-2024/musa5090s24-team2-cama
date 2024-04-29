@@ -1,0 +1,11 @@
+# Node or Python generated files
+node_modules/
+env/
+*.pyc
+deploy.sh
+
+# Data generated while testing
+*.[csv|zip|gpkg|json|jsonl]
+
+# The .gcloudignore file itself
+.gcloudignore
