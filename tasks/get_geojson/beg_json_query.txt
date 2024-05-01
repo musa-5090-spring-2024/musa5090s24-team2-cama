@@ -1,0 +1,47 @@
+with geodata as (
+select 
+  property_id,
+  address,
+  max(`core.opa_assessments`.year) as latest_year,
+  market_value as tax_year_assessed_value,
+  any_value(geog) as geog,
+  from 
+`core.pwd_parcels` join `core.opa_assessments`
+on `core.pwd_parcels`.property_id = `core.opa_assessments`.parcel_number
+group by property_id, address, market_value
+),
+ndjson as (
+	select STRUCT(
+		"Feature" AS type,
+		STRUCT(property_id,address,geodata.latest_year,tax_year_assessed_value) AS properties,
+		STRUCT(
+			"Polygon" AS type,
+			geog AS coordinates
+		) AS geometry
+		) json
+		from geodata
+)
+SELECT TO_JSON_STRING(STRUCT(
+	"FeatureCollection" AS type,
+	ARRAY_AGG(json) AS features
+	))
+	FROM ndjson;
+
+/*
+Just view the data:
+
+```
+select 
+  property_id,
+  address,
+  max(`core.opa_assessments`.year) as latest_year,
+  market_value,
+  any_value(geog) as geog,
+  from 
+`core.pwd_parcels` join `core.opa_assessments`
+on `core.pwd_parcels`.property_id = `core.opa_assessments`.parcel_number
+group by property_id, address, market_value
+```
+
+
+*/
