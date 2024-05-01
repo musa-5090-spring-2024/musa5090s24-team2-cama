@@ -46,7 +46,7 @@ Papa.parse(distributionChartUrl, {
       // handle dropdown creation
       const year = data.map(f => Number(f.tax_year));
       const minYear = 2013;
-      const maxYear = Math.max(...year) - 1;
+      const maxYear = Math.max(...year);
       const yearList = getYearList(minYear, maxYear);
       handleYearDropdown(dropdown, yearList, maxYear);
 
