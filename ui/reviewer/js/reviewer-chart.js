@@ -147,7 +147,7 @@ function getYearList(minYear, maxYear) {
 function handleYearDropdown(dropdown, yearList, maxYear) {
   // create default option that select the current year
   const defaultOption = document.createElement('option');
-  defaultOption.value = 'default';
+  defaultOption.value = maxYear;
   defaultOption.text = maxYear.toString();
   dropdown.appendChild(defaultOption);
   // other options
